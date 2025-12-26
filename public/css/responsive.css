@@ -1,0 +1,229 @@
+@media(max-width: 767px) {
+    .ddashboardSidebarOverlay {
+        display: block;
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, .7);
+        z-index: 12;
+        display: none;
+    }
+
+    .ddashboardSidebarOverlay.open {
+        display: block;
+    }
+
+    .dashboardSidebar {
+        background-color: #fff;
+        width: 260px;
+        left: -300px;
+    }
+
+    .dashboardSidebar.open {
+        -webkit-transition: transform .5s;
+        -moz-transition: transform .5s;
+        transition: .3s;
+        width: 260px;
+        left: 0;
+        z-index: 13;
+    }
+
+    .dashboardPagesContent {
+        margin-left: 0px;
+        padding: 0;
+    }
+
+    .dashboardHomeHeader {
+        border-bottom: 1px solid rgb(243 244 246);
+        padding: 15px;
+    }
+
+    .dashboardHomeHeaderinner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .left-part img {
+        width: 114px;
+    }
+
+    .nan-btn-icon {
+        display: block;
+        width: 30px;
+        height: 3px;
+        background-color: #7f8082;
+        margin: 5px 0;
+    }
+
+    .sidebar-trigger {
+        border: 0;
+        background: transparent;
+    }
+
+    .bottom-nav {
+        position: fixed;
+        bottom: 0px;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        background: #fff;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-around;
+        padding: 8px 0 10px;
+    }
+
+    .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 13px;
+        color: #9ca3af;
+        flex: 1;
+    }
+
+    .nav-item.active {
+        color: #2c67d3;
+        font-weight: 500;
+    }
+
+    .nav-icon svg {
+        width: 25px;
+        height: 25px;
+        margin-bottom: 5px;
+    }
+
+    .dashBoradPageBody {
+        padding-bottom: 85px;
+    }
+
+    .dashboardpageContectBox {
+        width: 100%;
+    }
+
+    .dashboardHomeHeader {
+        display: block;
+    }
+}
+
+@media(max-width: 575px) {
+    .login-input-sec {
+        width: 100%;
+    }
+
+    .login-box-bottom-inner {
+        padding: 30px 15px;
+    }
+
+    .form-group label {
+        font-size: 15px;
+    }
+
+    .form-group input {
+        font-size: 15px;
+    }
+
+    .otp-input-wrapper input {
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
+    }
+
+    .register-check-sec {
+        gap: 0;
+    }
+
+    .register-check-sec p {
+        margin-left: 12px;
+    }
+
+    .home-service-wrapper {
+        flex-wrap: wrap;
+    }
+
+    .service-box {
+        width: 50%;
+        margin-bottom: 20px;
+    }
+}
+
+@media(max-width: 480px) {
+    .home-top-sec h2 {
+        font-size: 17px;
+    }
+
+    .nan-btn-icon {
+        width: 22px;
+        height: 2px;
+        margin: 4px 0;
+    }
+
+    .service-box {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .service-icon {
+        width: 30px;
+    }
+
+    .service-text {
+        padding-left: 12px;
+    }
+
+    .dashboardSidebarMenu ul li a svg,
+    .menu-bottom-sec ul li a svg {
+        width: 18px;
+    }
+
+    .dashboardSidebarMenu ul li a,
+    .menu-bottom-sec ul li a {
+        font-size: 14px;
+        padding: 10px 14px;
+    }
+
+    .dashboardSidebarHeaderinner a img {
+        width: 86px;
+    }
+
+    .menu-bottom-sec ul li:last-child a svg {
+        width: 15px;
+    }
+
+    .nav-icon svg {
+        width: 21px;
+        height: 22px;
+    }
+
+    .dashboardpageContectBox {
+        padding: 24px 18px;
+    }
+
+    .application-box h4 {
+        font-size: 15px;
+        margin-bottom: 10px;
+    }
+
+    .select-group select {
+        font-size: 13px;
+    }
+
+    .payment-dtl-table {
+        overflow: auto;
+    }
+
+    .supportModal .modal-body {
+        overflow: auto;
+        height: 350px;
+    }
+
+    .form-group input {
+        height: 40px;
+    }
+}
