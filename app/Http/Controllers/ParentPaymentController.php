@@ -26,19 +26,37 @@ class ParentPaymentController extends Controller
 
         $totalAmount = $dues->sum('amount');
 
-        foreach ($dues as $due) {
-            $due->update(['status' => 'PAID']);
-        }
-
-        StudentPayment::create([
-            'student_id' => $dues->first()->student_id,
-            'parent_id'  => auth('parent')->id(),
-            'amount'     => $totalAmount,
+        // 1️⃣ CREATE PAYMENT RECORD
+        $payment = StudentPayment::create([
+            'student_id'   => $dues->first()->student_id,
+            'parent_id'    => auth('parent')->id(),
+            'amount'       => $totalAmount,
             'payment_mode' => 'ONLINE',
-            'months'     => $dues->pluck('month')->implode(', '),
-            'status'     => 'SUCCESS',
+            'months'       => $dues->pluck('month')->implode(', '),
+            'status'       => 'SUCCESS',
         ]);
 
+        // 2️⃣ MARK ALL DUES AS PAID + LINK PAYMENT
+        foreach ($dues as $due) {
+            $due->update([
+                'status'      => 'PAID',
+                'payment_id'  => $payment->id,
+            ]);
+        }
+
         return back()->with('success', 'Payment successful');
+    }
+
+    public function receipt($paymentId)
+    {
+        $payment = \App\Models\StudentPayment::with(['student', 'dues'])
+            ->findOrFail($paymentId);
+
+        // security: only allow the parent who made the payment
+        if ($payment->parent_id != auth('parent')->id()) {
+            abort(403, 'Unauthorized');
+        }
+
+        return view('parent.payments.receipt', compact('payment'));
     }
 }

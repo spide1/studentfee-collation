@@ -227,3 +227,208 @@
         height: 40px;
     }
 }
+
+
+@media(min-width: 991px) {
+    .dashboardPagesContent.minimiseBar {
+        margin-left: 50px;
+    }
+
+    .dashboardSidebar.minimiseBar {
+        width: 50px;
+    }
+
+    .dashboardSidebar.minimiseBar .sub-title {
+        display: none;
+    }
+
+    .dashboardSidebar.minimiseBar .dashboardSidebarMenu-bottom a {
+        padding: 2px 8px;
+    }
+
+    .dashboardSidebar.minimiseBar .dashboardSidebarMenu-bottom a span {
+        display: none;
+    }
+
+    .dashboardSidebar.minimiseBar .dashboardSidebarMenu ul li a .txt {
+        display: none;
+    }
+}
+
+@media(max-width: 991px) {
+    .ddashboardSidebarOverlay {
+        display: block;
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, .7);
+        z-index: 12;
+        display: none;
+    }
+
+    .dashboardSidebar {
+        background-color: #fff;
+        width: 260px;
+        left: -300px;
+    }
+
+    .dashboardPagesContent {
+        margin-left: 0px;
+        padding: 0px;
+    }
+
+    .ddashboardSidebarOverlay.open {
+        display: block;
+    }
+
+    .dashboardSidebar {
+        background-color: #fff;
+        width: 260px;
+        left: -300px;
+    }
+
+    .dashboardSidebar.open {
+        -webkit-transition: transform .5s;
+        -moz-transition: transform .5s;
+        transition: .3s;
+        width: 260px;
+        left: 0;
+        z-index: 13;
+    }
+
+    .customrColumn {
+        width: 25%;
+        margin-bottom: 20px;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .studnt-tab-dtl-wrapper {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
+    .studnt-tab-dtl-box {
+        width: 20%;
+    }
+}
+
+@media(max-width: 767px) {
+    .customrColumn {
+        width: 50%;
+    }
+
+    .students-top {
+        flex-wrap: wrap;
+    }
+
+    .students-top-box {
+        width: 33.33%;
+        margin-bottom: 10px;
+    }
+}
+
+@media(max-width: 575px) {
+    .login-input-sec {
+        width: 100%;
+    }
+
+    .details-tab-sec .tab-menu ul {
+        flex-wrap: wrap;
+    }
+
+    .top-search-box {
+        display: none;
+    }
+
+    .search-icon {
+        display: block;
+        font-size: 16px;
+        color: #000;
+    }
+
+    .students-list-bottom {
+        overflow: auto;
+    }
+
+    .students-list-bottom table tbody tr td {
+        white-space: nowrap;
+    }
+
+    .students-list-top {
+        flex-wrap: wrap;
+    }
+
+    .students-list-top .left-side {
+        width: 30%;
+        margin-bottom: 10px;
+    }
+
+    .students-list-top .right-side {
+        width: 100%;
+    }
+
+    .studnt-tab-dtl-box {
+        width: 33.33%;
+        padding: 6px 10px;
+    }
+
+    .off-btn {
+        font-size: 14px;
+    }
+
+    .edit-btn {
+        font-size: 14px;
+    }
+
+    .pay-sec {
+        flex-wrap: wrap;
+    }
+
+    .pay-box {
+        width: 50%;
+    }
+}
+
+@media(max-width: 480px) {
+    .dashboardDtlsAreainner {
+        padding: 14px;
+    }
+
+    .customrColumn {
+        width: 100%;
+        padding: 0;
+    }
+
+    .customrColumn:last-child {
+        margin: 0;
+    }
+
+    .students-top-box {
+        width: 50%;
+    }
+
+    .students-list-top .right-side {
+        flex-wrap: wrap;
+    }
+
+    .students-list-top button {
+        padding: 6px 9px;
+    }
+
+    .studnt-tab-dtl-box {
+        width: 50%;
+    }
+
+    .pay-box {
+        width: 100%;
+    }
+
+    .students-list-bottom table tfoot tr td {
+        white-space: nowrap;
+    }
+
+}

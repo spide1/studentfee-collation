@@ -8,22 +8,24 @@ use Illuminate\Support\Facades\Auth;
 
 class ParentStudentController extends Controller
 {
-   public function show(Request $request, $id)
-{
-    $student = Student::with('dues', 'fee')->findOrFail($id);
+    public function show($id)
+    {
+        $student = Student::with('dues')->findOrFail($id);
 
-    if ($request->month || $request->year) {
-        $student->setRelation(
-            'dues',
-            $student->dues->filter(function ($due) use ($request) {
-                return
-                    (!$request->month || $due->month === $request->month) &&
-                    (!$request->year || $due->year == $request->year);
-            })
-        );
+        // ---- GROUP MONTHS BY QUARTER ----
+        $dues = $student->dues()
+            ->orderBy('year')
+            ->orderByRaw("FIELD(month,
+            'April','May','June',
+            'July','August','September',
+            'October','November','December',
+            'January','February','March'
+        )")
+            ->get()
+            ->groupBy(function ($due) {
+                return ceil((date('n', strtotime($due->month . ' 1'))) / 3);
+            });
+
+        return view('parent.student.show', compact('student', 'dues'));
     }
-
-    return view('parent.student.show', compact('student'));
-}
-
 }

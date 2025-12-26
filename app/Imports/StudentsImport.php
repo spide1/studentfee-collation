@@ -39,12 +39,10 @@ class StudentsImport implements ToCollection
         foreach ($rows as $row) {
 
             if (empty($row[0]) || empty($row[6])) {
-                continue; // skip invalid rows
+                continue;
             }
 
-            /** ======================
-             *  CREATE / GET PARENT
-             ====================== */
+            // PARENT
             $parent = ParentUser::firstOrCreate(
                 ['mobile' => $row[2]],
                 [
@@ -53,9 +51,7 @@ class StudentsImport implements ToCollection
                 ]
             );
 
-            /** ======================
-             *  CREATE STUDENT
-             ====================== */
+            // STUDENT
             $student = Student::create([
                 'institute_id'  => $this->instituteId,
                 'parent_id'     => $parent->id,
@@ -69,16 +65,13 @@ class StudentsImport implements ToCollection
                 'is_active'     => 'Y',
             ]);
 
-            /** ======================
-             *  CALCULATE FEES
-             ====================== */
+            // BASE FEE
             $baseFee = (float) $row[6];
 
+            // CALCULATED
             $fee = FeeCalculator::calculate($this->feeType, $baseFee);
 
-            /** ======================
-             *  SAVE FEES
-             ====================== */
+            // SAVE FEES
             StudentFee::create([
                 'student_id'    => $student->id,
                 'monthly_fee'   => $fee['monthly_fee'],
@@ -87,38 +80,90 @@ class StudentsImport implements ToCollection
                 'is_active'     => 'Y',
             ]);
 
-            /** ======================
-             *  GENERATE MONTHLY DUES
-             ====================== */
-            $this->generateMonthlyDues($student, $fee['monthly_fee']);
+            // NEW LOGIC — GENERATE FEES
+            $this->generateDues(
+                $student,
+                $this->feeType,
+                $baseFee,
+                $this->academicYear
+            );
         }
     }
 
-    private function generateMonthlyDues(Student $student, float $monthlyFee): void
+    /**
+     * Generate dues based on plan
+     */
+    private function generateDues(Student $student, string $feeType, float $baseFee, string $academicYear)
     {
-        if ($monthlyFee <= 0) {
-            return;
-        }
+        [$startYear, $endYear] = explode('-', $academicYear);
 
         $months = [
-            'January','February','March','April','May','June',
-            'July','August','September','October','November','December'
+            'April','May','June',
+            'July','August','September',
+            'October','November','December',
+            'January','February','March'
         ];
 
-        $startIndex = array_search($this->startMonth, $months);
+        // MONTHLY
+        if ($feeType === 'MONTHLY') {
+            foreach ($months as $month) {
+                $year = in_array($month, ['January','February','March'])
+                    ? $endYear
+                    : $startYear;
 
-        for ($i = 0; $i < 12; $i++) {
+                StudentDue::create([
+                    'student_id' => $student->id,
+                    'month'      => $month,
+                    'year'       => $year,
+                    'amount'     => $baseFee,
+                    'status'     => 'UNPAID',
+                ]);
+            }
+        }
 
-            $monthIndex = ($startIndex + $i) % 12;
-            $year = $this->startYear + intdiv($startIndex + $i, 12);
+        // QUARTERLY
+        if ($feeType === 'QUARTERLY') {
 
+            $quarters = [
+                ['April','May','June'],
+                ['July','August','September'],
+                ['October','November','December'],
+                ['January','February','March'],
+            ];
+
+            foreach ($quarters as $q) {
+
+                $year = in_array('January', $q) ? $endYear : $startYear;
+
+                StudentDue::create([
+                    'student_id' => $student->id,
+                    'month'      => implode('-', $q),
+                    'year'       => $year,
+                    'amount'     => $baseFee,
+                    'status'     => 'UNPAID',
+                ]);
+            }
+        }
+
+        // ANNUAL
+        if ($feeType === 'ANNUAL') {
             StudentDue::create([
                 'student_id' => $student->id,
-                'month'      => $months[$monthIndex],
-                'year'       => $year,
-                'amount'     => $monthlyFee,
+                'month'      => 'APRIL-MARCH',
+                'year'       => $startYear,
+                'amount'     => $baseFee,
                 'status'     => 'UNPAID',
-                'is_active'  => 'Y',
+            ]);
+        }
+
+        // ADVANCE
+        if ($feeType === 'ADVANCE') {
+            StudentDue::create([
+                'student_id' => $student->id,
+                'month'      => 'ADVANCE',
+                'year'       => $startYear,
+                'amount'     => $baseFee,
+                'status'     => 'UNPAID',
             ]);
         }
     }

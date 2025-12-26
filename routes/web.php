@@ -57,6 +57,7 @@ Route::middleware('auth')->group(function () {
 
 use App\Http\Controllers\InstituteAuthController;
 use App\Http\Controllers\InstituteStudentController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,16 +68,16 @@ use App\Http\Controllers\InstituteStudentController;
 Route::prefix('institute')->middleware('guest')->group(function () {
 
     Route::get('/register', [InstituteAuthController::class, 'showRegister'])
-        ->name('institute.register');
+    ->name('institute.register');
 
     Route::post('/register', [InstituteAuthController::class, 'register'])
-        ->name('institute.register.submit');
+    ->name('institute.register.submit');
 
     Route::get('/login', [InstituteAuthController::class, 'showLogin'])
-        ->name('institute.login');
+    ->name('institute.login');
 
     Route::post('/login', [InstituteAuthController::class, 'login'])
-        ->name('institute.login.submit');
+    ->name('institute.login.submit');
 });
 
 
@@ -90,40 +91,35 @@ Route::prefix('institute')
     ->name('institute.')
     ->group(function () {
 
-        // Institute Profile
+        // Profile
         Route::get('/profile', function () {
             return view('institute.profile');
         })->name('profile');
 
-        // Dashboard
-        Route::get('/dashboard', function () {
-            return view('institute.dashboard');
-        })->name('dashboard');
+        // Dashboard (Controller)
+        Route::get('/dashboard', [DashboardController::class, 'index'])
+            ->name('dashboard');
 
-        // =====================
-        // STUDENTS
-        // =====================
-        Route::get('/students', [InstituteStudentController::class, 'index'])
-            ->name('students.index');
-
-        Route::get('/students/create', [InstituteStudentController::class, 'create'])
-            ->name('students.create');
-
-        Route::post('/students/store', [InstituteStudentController::class, 'store'])
-            ->name('students.store');
-        Route::get(
-            'students/{student}',
-            [InstituteStudentController::class, 'show']
-        )->name('students.show');
+ // --------- STATIC FEATURE PAGES (Blank placeholders) ---------
+        Route::view('/subscriptions', 'institute.subscriptions')->name('subscriptions');
+        Route::view('/cashflow', 'institute.cashflow')->name('cashflow');
+        Route::view('/overdue', 'institute.overdue')->name('overdue');
+        Route::view('/reports', 'institute.reports')->name('reports');
+        Route::view('/manage-institute', 'institute.manage_institute')->name('manage');
+        Route::view('/manage-users', 'institute.manage_users')->name('users');
 
 
-        Route::post('/students/import', [InstituteStudentController::class, 'import'])
-            ->name('students.import');
+        // Students
+        Route::get('/students', [InstituteStudentController::class, 'index'])->name('students.index');
+        Route::get('/students/create', [InstituteStudentController::class, 'create'])->name('students.create');
+        Route::post('/students/store', [InstituteStudentController::class, 'store'])->name('students.store');
+        Route::get('students/{student}', [InstituteStudentController::class, 'show'])->name('students.show');
+        Route::post('/students/import', [InstituteStudentController::class, 'import'])->name('students.import');
 
         // Logout
-        Route::post('/logout', [InstituteAuthController::class, 'logout'])
-            ->name('logout');
+        Route::post('/logout', [InstituteAuthController::class, 'logout'])->name('logout');
     });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -189,6 +185,9 @@ Route::prefix('parent')->group(function () {
         ->name('parent.student.show');
         Route::post('/parent/pay-selected', [ParentPaymentController::class, 'paySelected'])
         ->name('parent.pay.selected');
+        Route::get('receipt/{payment}', [ParentPaymentController::class, 'receipt'])
+    ->name('parent.payment.receipt');
+
 
         Route::post('/logout', [ParentAuthController::class, 'logout'])
         ->name('parent.logout');
@@ -198,3 +197,19 @@ use App\Http\Controllers\InstitutePaymentController;
 
 Route::get('/payments/transactions', [InstitutePaymentController::class, 'transactions'])
     ->name('institute.transactions');
+
+
+
+    // Route::prefix('institute')
+    // ->middleware('auth:institute')
+    // ->name('institute.')
+    // ->group(function () {
+
+    //     Route::view('/subscriptions', 'institute.pages.subscriptions')->name('subscriptions');
+    //     Route::view('/cashflow', 'institute.pages.cashflow')->name('cashflow');
+    //     Route::view('/overdue', 'institute.pages.overdue')->name('overdue');
+    //     Route::view('/reports', 'institute.pages.reports')->name('reports');
+    //     Route::view('/manage-institute', 'institute.pages.manage_institute')->name('manage');
+    //     Route::view('/manage-users', 'institute.pages.manage_users')->name('users');
+
+    // });

@@ -15,10 +15,16 @@ class StudentDue extends Model
         'amount',
         'status',
         'is_active',
+        'payment_id',
     ];
 
     public function student()
     {
         return $this->belongsTo(Student::class);
+    }
+
+    public function payment()
+    {
+        return $this->belongsTo(StudentPayment::class, 'payment_id');
     }
 }

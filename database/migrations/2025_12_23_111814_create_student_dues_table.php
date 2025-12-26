@@ -19,6 +19,7 @@ return new class extends Migration
 
             $table->enum('status', ['PAID', 'UNPAID'])->default('UNPAID');;
             $table->enum('is_active', ['Y', 'N'])->default('Y');
+            $table->unsignedBigInteger('payment_id');
 
             $table->timestamps();
         });

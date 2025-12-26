@@ -11,6 +11,8 @@
         </a>
     </li>
 
+
+
     <li>
         <a href="{{ route('parent.logout') }}">
             <i class="fa fa-sign-out"></i> Logout

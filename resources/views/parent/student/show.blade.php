@@ -18,6 +18,8 @@
     <form method="POST" action="{{ route('parent.pay.selected') }}" id="paymentForm">
         @csrf
 
+        <input type="hidden" name="student_id" value="{{ $student->id }}">
+
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -27,7 +29,7 @@
                     <th>Month</th>
                     <th>Year</th>
                     <th>Amount</th>
-                    <th>Status</th>
+                    <th>Status / Receipt</th>
                 </tr>
             </thead>
 
@@ -46,11 +48,19 @@
 
                     <td>{{ $due->month }}</td>
                     <td>{{ $due->year }}</td>
-                    <td>₹ {{ number_format($due->amount, 2) }}</td>
+                    <td>₹ {{ number_format($due->amount,2) }}</td>
 
                     <td>
                         @if($due->status === 'PAID')
                             <span class="badge bg-success">Paid</span>
+
+                            @if($due->payment)
+                                <a href="{{ route('parent.payment.receipt', $due->payment->id) }}"
+                                   class="btn btn-sm btn-outline-primary ms-2">
+                                    Download Receipt
+                                </a>
+                            @endif
+
                         @else
                             <span class="badge bg-danger">Due</span>
                         @endif
@@ -63,12 +73,14 @@
         <!-- TOTAL -->
         <h5 class="mt-3">
             Selected Amount:
-            <span class="text-primary">₹ <span id="selectedAmount">0</span></span>
+            <span class="text-primary">
+                ₹ <span id="selectedAmount">0</span>
+            </span>
         </h5>
 
         <!-- ACTIONS -->
         <div class="mt-3">
-            <button type="submit" class="btn btn-warning" id="paySelectedBtn" disabled>
+            <button type="button" class="btn btn-warning" id="paySelectedBtn" disabled>
                 Pay Selected
             </button>
 
@@ -83,44 +95,104 @@
 
     </form>
 </div>
+
+
+<!-- PAYMENT CONFIRM MODAL -->
+<div class="modal fade" id="confirmPaymentModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Payment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <p id="confirmText">
+                    Are you sure you want to proceed with this payment?
+                </p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+
+                <button type="button"
+                        class="btn btn-primary"
+                        id="confirmPayBtn">
+                    Confirm & Pay
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
 @endsection
+
 
 @push('scripts')
 <script>
-    const checkboxes = document.querySelectorAll('.due-checkbox');
-    const selectAll = document.getElementById('selectAll');
-    const selectedAmountEl = document.getElementById('selectedAmount');
-    const paySelectedBtn = document.getElementById('paySelectedBtn');
+const checkboxes = document.querySelectorAll('.due-checkbox');
+const selectAll = document.getElementById('selectAll');
+const selectedAmountEl = document.getElementById('selectedAmount');
+const paySelectedBtn = document.getElementById('paySelectedBtn');
 
-    function calculateTotal() {
-        let total = 0;
-        checkboxes.forEach(cb => {
-            if (cb.checked) {
-                total += parseFloat(cb.dataset.amount);
-            }
-        });
+let isFullPayment = false;
 
-        selectedAmountEl.innerText = total.toFixed(2);
-        paySelectedBtn.disabled = total === 0;
-    }
+function calculateTotal() {
+    let total = 0;
+    checkboxes.forEach(cb => cb.checked && (total += parseFloat(cb.dataset.amount)));
+    selectedAmountEl.innerText = total.toFixed(2);
+    paySelectedBtn.disabled = total === 0;
+}
 
-    // Individual checkbox change
-    checkboxes.forEach(cb => {
-        cb.addEventListener('change', calculateTotal);
-    });
+checkboxes.forEach(cb => cb.addEventListener('change', calculateTotal));
 
-    // Select all
-    selectAll.addEventListener('change', function () {
-        checkboxes.forEach(cb => cb.checked = this.checked);
-        calculateTotal();
-    });
+selectAll.addEventListener('change', function () {
+    checkboxes.forEach(cb => cb.checked = this.checked);
+    calculateTotal();
+});
 
-    // PAY FULL → auto select all
-    document.getElementById('payFullBtn').addEventListener('click', function () {
-        checkboxes.forEach(cb => cb.checked = true);
-        selectAll.checked = true;
-        calculateTotal();
-        document.getElementById('paymentForm').submit();
-    });
+const paymentForm = document.getElementById('paymentForm');
+const confirmModal = new bootstrap.Modal(document.getElementById('confirmPaymentModal'));
+const confirmText = document.getElementById('confirmText');
+
+// PAY SELECTED
+paySelectedBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    isFullPayment = false;
+
+    confirmText.innerHTML =
+        `You are about to pay <strong>₹ ${selectedAmountEl.innerText}</strong>.<br>
+         Do you want to continue?`;
+
+    confirmModal.show();
+});
+
+// PAY FULL
+document.getElementById('payFullBtn').addEventListener('click', function (e) {
+    e.preventDefault();
+    isFullPayment = true;
+
+    checkboxes.forEach(cb => cb.checked = true);
+    selectAll.checked = true;
+    calculateTotal();
+
+    confirmText.innerHTML =
+        `You are about to pay the <strong>full outstanding amount</strong>.<br>
+         Total: <strong>₹ ${selectedAmountEl.innerText}</strong>.<br>
+         Proceed?`;
+
+    confirmModal.show();
+});
+
+// FINAL CONFIRM
+document.getElementById('confirmPayBtn').addEventListener('click', function () {
+    confirmModal.hide();
+    paymentForm.submit();
+});
 </script>
 @endpush
